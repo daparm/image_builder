@@ -1,0 +1,21 @@
+builder_compose_type: image-installer
+builder_blueprint_name: rhel_image_installer_build
+builder_pub_key: ./image_builder_test.pub
+builder_compose_pkgs:
+  - vim-enhanced
+  - httpd
+  - ansible-core
+  - tmux
+builder_compose_customizations:
+  user:
+    name: "core"
+    description: "test user"
+    password: "testpassword"
+    key: "{{ builder_pub_key }}"
+    groups:
+      - "users"
+      - "wheel"
+  services:
+    enabled: ["firewalld"]
+  firewalld.services:
+    enabled: ["ssh", "https"]

@@ -1,0 +1,33 @@
+builder_compose_type: ova
+builder_blueprint_name: ova_rhel_image_installer_build
+builder_pub_key: ./image_builder_test.pub
+builder_compose_pkgs:
+  - vim-enhanced
+  - httpd
+  - ansible-core
+  - tmux
+builder_compose_customizations:
+  user:
+    name: "core"
+    description: "test user"
+    password: "testpassword"
+    key: "{{ builder_pub_key }}"
+    groups:
+      - "users"
+      - "wheel"
+  services:
+    enabled: ["firewalld"]
+  firewalld.services:
+    enabled: ["ssh", "https"]
+builder_kickstart_options:
+  - lang en_US.UTF-8
+  - keyboard us
+  - timezone Etc/UTC --utc
+  - text
+  - zerombr
+  - clearpart --all --initlabel
+  - autopart --type=plain --fstype=xfs --nohome
+  - reboot
+  - network --bootproto=dhcp
+  - services --enabled=ostree-remount
+  - ostreesetup --nogpg --osname=rhel --remote=edge --url=http://{{ builder_system_ipv4 }}/{{ builder_blueprint_name }}/repo/ --ref={{ builder_blueprint_ref }}  # noqa yaml[line-length]
